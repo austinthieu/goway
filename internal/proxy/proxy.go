@@ -1,5 +1,6 @@
-// Package proxy wires the backend pool and load balancer into an
-// http.Handler that routes each incoming request to a chosen backend.
+// Package proxy wires the backend pool, load balancer, and rate limiter
+// into an http.Handler that routes each incoming request to a chosen
+// backend.
 package proxy
 
 import (
@@ -7,15 +8,23 @@ import (
 
 	"github.com/austinthieu/goway/internal/backendpool"
 	"github.com/austinthieu/goway/internal/balancer"
+	"github.com/austinthieu/goway/internal/ratelimit"
 )
 
-// Gateway routes incoming HTTP requests to a backend chosen by its balancer.
+// Gateway routes incoming HTTP requests to a backend chosen by its balancer,
+// after checking the caller's rate limit.
 type Gateway struct {
 	Pool     *backendpool.Pool
 	Balancer balancer.Balancer
+	Limiter  *ratelimit.Limiter
 }
 
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if g.Limiter != nil && !g.Limiter.Allow(ratelimit.ClientID(r)) {
+		http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
+		return
+	}
+
 	backend := g.Balancer.Next(g.Pool.Backends)
 	if backend == nil {
 		http.Error(w, "no backends available", http.StatusServiceUnavailable)

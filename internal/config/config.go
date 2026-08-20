@@ -15,11 +15,19 @@ type BackendConfig struct {
 	Weight int    `yaml:"weight"`
 }
 
+// RateLimitConfig configures the shared default token bucket applied to
+// every client.
+type RateLimitConfig struct {
+	Capacity   float64 `yaml:"capacity"`
+	RefillRate float64 `yaml:"refill_rate"`
+}
+
 // Config is the top-level gateway configuration.
 type Config struct {
 	ListenAddr string          `yaml:"listen_addr"`
 	Strategy   string          `yaml:"strategy"`
 	Backends   []BackendConfig `yaml:"backends"`
+	RateLimit  RateLimitConfig `yaml:"rate_limit"`
 }
 
 // Load reads and parses a YAML config file from path.
@@ -41,6 +49,12 @@ func Load(path string) (*Config, error) {
 	}
 	if cfg.Strategy == "" {
 		cfg.Strategy = "round_robin"
+	}
+	if cfg.RateLimit.Capacity == 0 {
+		cfg.RateLimit.Capacity = 20
+	}
+	if cfg.RateLimit.RefillRate == 0 {
+		cfg.RateLimit.RefillRate = 10
 	}
 
 	return &cfg, nil

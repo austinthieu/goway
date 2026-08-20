@@ -1,5 +1,8 @@
 listen_addr: ":8080"
 strategy: round_robin
+rate_limit:
+  capacity: 20
+  refill_rate: 10
 backends:
   - url: "http://localhost:8081"
     weight: 1

@@ -15,6 +15,7 @@ import (
 	"github.com/austinthieu/goway/internal/config"
 	"github.com/austinthieu/goway/internal/healthcheck"
 	"github.com/austinthieu/goway/internal/proxy"
+	"github.com/austinthieu/goway/internal/ratelimit"
 )
 
 func main() {
@@ -41,7 +42,11 @@ func main() {
 
 	go healthcheck.Run(ctx, pool, healthcheck.DefaultOptions())
 
-	gw := &proxy.Gateway{Pool: pool, Balancer: bal}
+	limiter := ratelimit.New(ratelimit.Options{
+		Capacity:   cfg.RateLimit.Capacity,
+		RefillRate: cfg.RateLimit.RefillRate,
+	})
+	gw := &proxy.Gateway{Pool: pool, Balancer: bal, Limiter: limiter}
 	server := &http.Server{Addr: cfg.ListenAddr, Handler: gw}
 
 	go func() {
