@@ -7,6 +7,8 @@ package backendpool
 import (
 	"net/http/httputil"
 	"net/url"
+
+	"github.com/athieu123/goway/internal/config"
 )
 
 // Backend represents a single upstream server the gateway can route to.
@@ -21,17 +23,17 @@ type Pool struct {
 	Backends []*Backend
 }
 
-// NewPool builds a Pool of reverse proxies for the given backend URLs.
-func NewPool(urls []string) (*Pool, error) {
+// NewPool builds a Pool of reverse proxies for the given backend configs.
+func NewPool(backends []config.BackendConfig) (*Pool, error) {
 	pool := &Pool{}
-	for _, raw := range urls {
-		u, err := url.Parse(raw)
+	for _, b := range backends {
+		u, err := url.Parse(b.URL)
 		if err != nil {
 			return nil, err
 		}
 		pool.Backends = append(pool.Backends, &Backend{
 			URL:          u,
-			Weight:       1,
+			Weight:       b.Weight,
 			ReverseProxy: httputil.NewSingleHostReverseProxy(u),
 		})
 	}
