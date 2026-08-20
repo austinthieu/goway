@@ -69,6 +69,23 @@ across 3 backends, a backend crash caught by the active health checker,
 the rate limiter kicking in on a burst, a zero-downtime `SIGHUP` reload
 adding a 4th backend live, and the resulting Prometheus metrics.
 
+To turn that into a GIF (e.g. for a resume/README banner), the walkthrough
+is scripted at `scripts/demo.sh` and wired up for
+[VHS](https://github.com/charmbracelet/vhs) at `docs/demo.tape`:
+
+```bash
+# Ubuntu/Debian:
+sudo apt install -y ffmpeg
+# ttyd isn't in apt — grab a static binary from
+# https://github.com/tsl0922/ttyd/releases (e.g. ttyd.x86_64), chmod +x,
+# and put it on PATH.
+go install github.com/charmbracelet/vhs@latest   # or a release binary
+
+vhs docs/demo.tape   # -> docs/demo.gif
+```
+
+Then embed it at the top of this README with `![demo](docs/demo.gif)`.
+
 ## Architecture
 
 See `docs/architecture.md` for the request-flow and goroutine diagrams,
