@@ -12,6 +12,26 @@ type Balancer interface {
 	Next(pool []*backendpool.Backend) *backendpool.Backend
 }
 
+// New builds the Balancer named by strategy.
+func New(strategy string) (Balancer, error) {
+	switch strategy {
+	case "round_robin", "":
+		return &RoundRobin{}, nil
+	case "least_conn":
+		return &LeastConnections{}, nil
+	case "weighted":
+		return &WeightedRoundRobin{}, nil
+	default:
+		return nil, unknownStrategyError(strategy)
+	}
+}
+
+type unknownStrategyError string
+
+func (e unknownStrategyError) Error() string {
+	return "unknown load balancing strategy: " + string(e)
+}
+
 // filterEligible returns the subset of pool currently eligible for traffic.
 // Shared by every strategy so "skip ineligible backends" logic lives in one
 // place.

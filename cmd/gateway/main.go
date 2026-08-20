@@ -11,16 +11,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/austinthieu/goway/internal/backendpool"
-	"github.com/austinthieu/goway/internal/balancer"
 	"github.com/austinthieu/goway/internal/config"
-	"github.com/austinthieu/goway/internal/healthcheck"
 	"github.com/austinthieu/goway/internal/metrics"
 	"github.com/austinthieu/goway/internal/proxy"
-	"github.com/austinthieu/goway/internal/ratelimit"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+const shutdownTimeout = 5 * time.Second
 
 func main() {
 	configPath := flag.String("config", "testdata/config.yaml", "path to gateway YAML config")
@@ -31,30 +29,18 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
-	pool, err := backendpool.NewPool(cfg.Backends)
-	if err != nil {
-		log.Fatalf("failed to build backend pool: %v", err)
-	}
-
-	bal, err := newBalancer(cfg.Strategy)
-	if err != nil {
-		log.Fatalf("failed to init balancer: %v", err)
-	}
-
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	go healthcheck.Run(ctx, pool, healthcheck.DefaultOptions())
-
 	registry := prometheus.NewRegistry()
 	recorder := metrics.NewRecorder(registry)
-	go metrics.PollBackends(ctx, pool, recorder, time.Second)
 
-	limiter := ratelimit.New(ratelimit.Options{
-		Capacity:   cfg.RateLimit.Capacity,
-		RefillRate: cfg.RateLimit.RefillRate,
-	})
-	gw := &proxy.Gateway{Pool: pool, Balancer: bal, Limiter: limiter, Metrics: recorder}
+	gw := &proxy.Gateway{Metrics: recorder}
+	if err := gw.Reload(ctx, cfg); err != nil {
+		log.Fatalf("failed to load initial config: %v", err)
+	}
+	go watchSIGHUP(ctx, gw, *configPath)
+
 	server := &http.Server{Addr: cfg.ListenAddr, Handler: gw}
 
 	adminMux := http.NewServeMux()
@@ -70,32 +56,42 @@ func main() {
 
 	go func() {
 		<-ctx.Done()
-		log.Println("shutting down gateway")
-		server.Close()
-		adminServer.Close()
+		log.Println("shutting down gateway: waiting up to", shutdownTimeout, "for in-flight requests")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer cancel()
+		server.Shutdown(shutdownCtx)
+		adminServer.Shutdown(shutdownCtx)
 	}()
 
-	log.Printf("gateway listening on %s, strategy=%s, backends=%d", cfg.ListenAddr, cfg.Strategy, len(pool.Backends))
+	log.Printf("gateway listening on %s, backends=%d", cfg.ListenAddr, len(cfg.Backends))
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("server error: %v", err)
 	}
 }
 
-func newBalancer(strategy string) (balancer.Balancer, error) {
-	switch strategy {
-	case "round_robin", "":
-		return &balancer.RoundRobin{}, nil
-	case "least_conn":
-		return &balancer.LeastConnections{}, nil
-	case "weighted":
-		return &balancer.WeightedRoundRobin{}, nil
-	default:
-		return nil, errUnknownStrategy(strategy)
+// watchSIGHUP reloads the config from configPath every time the process
+// receives SIGHUP, e.g. `kill -HUP <pid>`, and rebuilds the gateway's
+// backend pool/balancer/limiter without dropping any in-flight request.
+func watchSIGHUP(ctx context.Context, gw *proxy.Gateway, configPath string) {
+	sighup := make(chan os.Signal, 1)
+	signal.Notify(sighup, syscall.SIGHUP)
+	defer signal.Stop(sighup)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-sighup:
+			cfg, err := config.Load(configPath)
+			if err != nil {
+				log.Printf("config reload failed, keeping previous config: %v", err)
+				continue
+			}
+			if err := gw.Reload(ctx, cfg); err != nil {
+				log.Printf("config reload failed, keeping previous config: %v", err)
+				continue
+			}
+			log.Printf("config reloaded from %s, backends=%d", configPath, len(cfg.Backends))
+		}
 	}
-}
-
-type errUnknownStrategy string
-
-func (e errUnknownStrategy) Error() string {
-	return "unknown load balancing strategy: " + string(e)
 }
