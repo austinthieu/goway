@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"sync/atomic"
 
-	"github.com/athieu123/goway/internal/config"
+	"github.com/austinthieu/goway/internal/config"
 )
 
 // Backend represents a single upstream server the gateway can route to.

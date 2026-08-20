@@ -10,11 +10,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/athieu123/goway/internal/backendpool"
-	"github.com/athieu123/goway/internal/balancer"
-	"github.com/athieu123/goway/internal/config"
-	"github.com/athieu123/goway/internal/healthcheck"
-	"github.com/athieu123/goway/internal/proxy"
+	"github.com/austinthieu/goway/internal/backendpool"
+	"github.com/austinthieu/goway/internal/balancer"
+	"github.com/austinthieu/goway/internal/config"
+	"github.com/austinthieu/goway/internal/healthcheck"
+	"github.com/austinthieu/goway/internal/proxy"
 )
 
 func main() {

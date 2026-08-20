@@ -1,4 +1,4 @@
-module github.com/athieu123/goway
+module github.com/austinthieu/goway
 
 go 1.27.0
 

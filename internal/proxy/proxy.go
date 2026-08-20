@@ -5,8 +5,8 @@ package proxy
 import (
 	"net/http"
 
-	"github.com/athieu123/goway/internal/backendpool"
-	"github.com/athieu123/goway/internal/balancer"
+	"github.com/austinthieu/goway/internal/backendpool"
+	"github.com/austinthieu/goway/internal/balancer"
 )
 
 // Gateway routes incoming HTTP requests to a backend chosen by its balancer.
