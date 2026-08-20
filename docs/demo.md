@@ -4,6 +4,12 @@ A real terminal transcript, captured end-to-end against a running gateway
 (3 backends started via `demo-backend`, gateway via `testdata/config.yaml`).
 Not staged output — every command below was actually run.
 
+![goway demo](demo.gif)
+
+The recording above is this same walkthrough, produced by
+`scripts/demo.sh` via `docs/demo.tape` (see the README for how to
+regenerate it).
+
 ## 1. Round-robin across 3 backends
 
 ```

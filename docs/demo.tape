@@ -5,7 +5,8 @@
 #
 #   vhs docs/demo.tape
 #
-# Requires vhs, ttyd, and ffmpeg on PATH (see README's GIF setup section).
+# Requires vhs and ffmpeg, plus the headless-Chromium shared libraries VHS
+# renders through (see the README's Demo section for the apt one-liner).
 
 Output docs/demo.gif
 
