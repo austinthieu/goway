@@ -2,13 +2,18 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/athieu123/goway/internal/backendpool"
 	"github.com/athieu123/goway/internal/balancer"
 	"github.com/athieu123/goway/internal/config"
+	"github.com/athieu123/goway/internal/healthcheck"
 	"github.com/athieu123/goway/internal/proxy"
 )
 
@@ -31,10 +36,24 @@ func main() {
 		log.Fatalf("failed to init balancer: %v", err)
 	}
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	go healthcheck.Run(ctx, pool, healthcheck.DefaultOptions())
+
 	gw := &proxy.Gateway{Pool: pool, Balancer: bal}
+	server := &http.Server{Addr: cfg.ListenAddr, Handler: gw}
+
+	go func() {
+		<-ctx.Done()
+		log.Println("shutting down gateway")
+		server.Close()
+	}()
 
 	log.Printf("gateway listening on %s, strategy=%s, backends=%d", cfg.ListenAddr, cfg.Strategy, len(pool.Backends))
-	log.Fatal(http.ListenAndServe(cfg.ListenAddr, gw))
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("server error: %v", err)
+	}
 }
 
 func newBalancer(strategy string) (balancer.Balancer, error) {

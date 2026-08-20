@@ -11,3 +11,16 @@ import "github.com/athieu123/goway/internal/backendpool"
 type Balancer interface {
 	Next(pool []*backendpool.Backend) *backendpool.Backend
 }
+
+// filterHealthy returns the subset of pool currently eligible for traffic.
+// Shared by every strategy so "skip unhealthy backends" logic lives in one
+// place.
+func filterHealthy(pool []*backendpool.Backend) []*backendpool.Backend {
+	healthy := make([]*backendpool.Backend, 0, len(pool))
+	for _, b := range pool {
+		if b.IsHealthy() {
+			healthy = append(healthy, b)
+		}
+	}
+	return healthy
+}
