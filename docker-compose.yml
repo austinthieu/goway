@@ -1,0 +1,30 @@
+services:
+  backend-1:
+    build: .
+    entrypoint: ["demo-backend"]
+    command: ["-port", "8081", "-name", "backend-1"]
+
+  backend-2:
+    build: .
+    entrypoint: ["demo-backend"]
+    command: ["-port", "8082", "-name", "backend-2"]
+
+  backend-3:
+    build: .
+    entrypoint: ["demo-backend"]
+    command: ["-port", "8083", "-name", "backend-3"]
+
+  gateway:
+    build: .
+    # Backends inside Compose are reached by service name, not localhost,
+    # so this uses a Docker-specific config (see testdata/config.docker.yaml)
+    # rather than the default testdata/config.yaml baked into the image.
+    volumes:
+      - ./testdata/config.docker.yaml:/etc/goway/config.yaml:ro
+    ports:
+      - "8080:8080" # proxied traffic
+      - "9090:9090" # admin endpoint / metrics
+    depends_on:
+      - backend-1
+      - backend-2
+      - backend-3

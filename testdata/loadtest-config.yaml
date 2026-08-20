@@ -1,0 +1,13 @@
+listen_addr: ":8080"
+admin_addr: ":9090"
+strategy: round_robin
+rate_limit:
+  capacity: 100000
+  refill_rate: 100000
+backends:
+  - url: "http://localhost:8081"
+    weight: 1
+  - url: "http://localhost:8082"
+    weight: 1
+  - url: "http://localhost:8083"
+    weight: 1
