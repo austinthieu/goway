@@ -62,6 +62,13 @@ against Docker's documented behavior but not run locally — this dev
 environment doesn't have Docker installed. Please open an issue if
 something doesn't build as expected.
 
+## Demo
+
+See `docs/demo.md` for a real, captured terminal walkthrough: round-robin
+across 3 backends, a backend crash caught by the active health checker,
+the rate limiter kicking in on a burst, a zero-downtime `SIGHUP` reload
+adding a 4th backend live, and the resulting Prometheus metrics.
+
 ## Architecture
 
 See `docs/architecture.md` for the request-flow and goroutine diagrams,
