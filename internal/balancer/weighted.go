@@ -22,8 +22,8 @@ type WeightedRoundRobin struct {
 }
 
 func (w *WeightedRoundRobin) Next(pool []*backendpool.Backend) *backendpool.Backend {
-	healthy := filterHealthy(pool)
-	if len(healthy) == 0 {
+	eligible := filterEligible(pool)
+	if len(eligible) == 0 {
 		return nil
 	}
 
@@ -36,7 +36,7 @@ func (w *WeightedRoundRobin) Next(pool []*backendpool.Backend) *backendpool.Back
 
 	total := 0
 	var selected *backendpool.Backend
-	for _, b := range healthy {
+	for _, b := range eligible {
 		weight := b.Weight
 		if weight <= 0 {
 			weight = 1

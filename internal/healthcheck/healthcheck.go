@@ -44,7 +44,7 @@ func probeLoop(ctx context.Context, backend *backendpool.Backend, opts Options) 
 			return
 		case <-ticker.C:
 			healthy := probe(client, healthzURL)
-			if healthy != backend.IsHealthy() {
+			if healthy != backend.ActiveHealthy() {
 				log.Printf("healthcheck: backend %s healthy=%v", backend.URL, healthy)
 			}
 			backend.SetHealthy(healthy)

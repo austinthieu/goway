@@ -7,14 +7,14 @@ import "github.com/austinthieu/goway/internal/backendpool"
 type LeastConnections struct{}
 
 func (l *LeastConnections) Next(pool []*backendpool.Backend) *backendpool.Backend {
-	healthy := filterHealthy(pool)
-	if len(healthy) == 0 {
+	eligible := filterEligible(pool)
+	if len(eligible) == 0 {
 		return nil
 	}
 
-	best := healthy[0]
+	best := eligible[0]
 	bestConns := best.ActiveConnections()
-	for _, b := range healthy[1:] {
+	for _, b := range eligible[1:] {
 		if c := b.ActiveConnections(); c < bestConns {
 			best, bestConns = b, c
 		}

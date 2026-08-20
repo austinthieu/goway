@@ -14,10 +14,10 @@ type RoundRobin struct {
 }
 
 func (r *RoundRobin) Next(pool []*backendpool.Backend) *backendpool.Backend {
-	healthy := filterHealthy(pool)
-	if len(healthy) == 0 {
+	eligible := filterEligible(pool)
+	if len(eligible) == 0 {
 		return nil
 	}
 	n := atomic.AddUint64(&r.counter, 1)
-	return healthy[n%uint64(len(healthy))]
+	return eligible[n%uint64(len(eligible))]
 }

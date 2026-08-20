@@ -12,15 +12,15 @@ type Balancer interface {
 	Next(pool []*backendpool.Backend) *backendpool.Backend
 }
 
-// filterHealthy returns the subset of pool currently eligible for traffic.
-// Shared by every strategy so "skip unhealthy backends" logic lives in one
+// filterEligible returns the subset of pool currently eligible for traffic.
+// Shared by every strategy so "skip ineligible backends" logic lives in one
 // place.
-func filterHealthy(pool []*backendpool.Backend) []*backendpool.Backend {
-	healthy := make([]*backendpool.Backend, 0, len(pool))
+func filterEligible(pool []*backendpool.Backend) []*backendpool.Backend {
+	eligible := make([]*backendpool.Backend, 0, len(pool))
 	for _, b := range pool {
-		if b.IsHealthy() {
-			healthy = append(healthy, b)
+		if b.IsEligible() {
+			eligible = append(eligible, b)
 		}
 	}
-	return healthy
+	return eligible
 }

@@ -76,16 +76,23 @@ func NewPool(backends []config.BackendConfig) (*Pool, error) {
 	return pool, nil
 }
 
-// IsHealthy reports whether this backend is currently eligible for traffic:
-// confirmed healthy by the active checker AND not tripped open by the
-// circuit breaker.
-func (b *Backend) IsHealthy() bool {
-	return b.healthy.Load() && b.Breaker.Allow()
+// ActiveHealthy reports the active health checker's own signal only —
+// whether the last /healthz probe succeeded. See CONTEXT.md: this is
+// "Healthy", distinct from "Eligible".
+func (b *Backend) ActiveHealthy() bool {
+	return b.healthy.Load()
 }
 
 // SetHealthy updates the backend's active-health-check state.
 func (b *Backend) SetHealthy(healthy bool) {
 	b.healthy.Store(healthy)
+}
+
+// IsEligible reports whether this backend is currently eligible for
+// traffic: confirmed Healthy by the active checker AND not tripped open by
+// the circuit breaker. See CONTEXT.md: "Eligible".
+func (b *Backend) IsEligible() bool {
+	return b.healthy.Load() && b.Breaker.Allow()
 }
 
 // IncConn records the start of a proxied request to this backend.
@@ -103,13 +110,13 @@ func (b *Backend) ActiveConnections() int64 {
 	return atomic.LoadInt64(&b.activeConns)
 }
 
-// Healthy returns the subset of pool that are currently eligible for traffic.
-func (p *Pool) Healthy() []*Backend {
-	healthy := make([]*Backend, 0, len(p.Backends))
+// Eligible returns the subset of pool that are currently eligible for traffic.
+func (p *Pool) Eligible() []*Backend {
+	eligible := make([]*Backend, 0, len(p.Backends))
 	for _, b := range p.Backends {
-		if b.IsHealthy() {
-			healthy = append(healthy, b)
+		if b.IsEligible() {
+			eligible = append(eligible, b)
 		}
 	}
-	return healthy
+	return eligible
 }
