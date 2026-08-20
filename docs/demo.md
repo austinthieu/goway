@@ -7,8 +7,30 @@ Not staged output — every command below was actually run.
 ![goway demo](demo.gif)
 
 The recording above is this same walkthrough, produced by
-`scripts/demo.sh` via `docs/demo.tape` (see the README for how to
-regenerate it).
+`scripts/demo.sh` via `docs/demo.tape`.
+
+## Regenerating the GIF
+
+```bash
+go install github.com/charmbracelet/vhs@latest
+sudo apt install -y ffmpeg
+
+# VHS renders through headless Chromium, which needs these shared
+# libraries on Ubuntu/Debian (the `t64` suffixes are correct on Ubuntu
+# 24.04+; drop them on older releases):
+sudo apt install -y libnss3 libnspr4 libatk1.0-0t64 libatk-bridge2.0-0t64 \
+  libcups2t64 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 \
+  libxrandr2 libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
+  libatspi2.0-0t64 libx11-6 libxcb1 libxext6
+
+vhs docs/demo.tape   # -> docs/demo.gif
+```
+
+Without those libraries VHS fails with
+`error while loading shared libraries: libnss3.so`.
+
+`scripts/demo.sh` is also useful on its own (`bash scripts/demo.sh`) to
+watch the walkthrough live without recording anything.
 
 ## 1. Round-robin across 3 backends
 

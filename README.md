@@ -64,40 +64,6 @@ against Docker's documented behavior but not run locally — this dev
 environment doesn't have Docker installed. Please open an issue if
 something doesn't build as expected.
 
-## Demo
-
-See `docs/demo.md` for a real, captured terminal walkthrough: round-robin
-across 3 backends, a backend crash caught by the active health checker,
-the rate limiter kicking in on a burst, a zero-downtime `SIGHUP` reload
-adding a 4th backend live, and the resulting Prometheus metrics.
-
-The GIF at the top of this README is generated from that same walkthrough:
-`scripts/demo.sh` runs it deterministically, and `docs/demo.tape` drives
-[VHS](https://github.com/charmbracelet/vhs) to record it.
-
-To regenerate it:
-
-```bash
-go install github.com/charmbracelet/vhs@latest
-sudo apt install -y ffmpeg
-
-# VHS renders through headless Chromium, which needs these shared
-# libraries on Ubuntu/Debian (the `t64` suffixes are correct on Ubuntu
-# 24.04+; drop them on older releases):
-sudo apt install -y libnss3 libnspr4 libatk1.0-0t64 libatk-bridge2.0-0t64 \
-  libcups2t64 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 \
-  libxrandr2 libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
-  libatspi2.0-0t64 libx11-6 libxcb1 libxext6
-
-vhs docs/demo.tape   # -> docs/demo.gif
-```
-
-Without those libraries VHS fails with
-`error while loading shared libraries: libnss3.so`.
-
-`scripts/demo.sh` is also useful on its own (`bash scripts/demo.sh`) to
-watch the walkthrough live without recording anything.
-
 ## Architecture
 
 See `docs/architecture.md` for the request-flow and goroutine diagrams,
