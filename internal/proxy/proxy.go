@@ -21,5 +21,17 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "no backends available", http.StatusServiceUnavailable)
 		return
 	}
+
+	// The balancer chose this backend from Allow()-filtered candidates;
+	// Reserve claims the actual trial slot (matters only in HalfOpen, where
+	// concurrent requests can race for a single slot).
+	if !backend.Breaker.Reserve() {
+		http.Error(w, "backend temporarily unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
+	backend.IncConn()
+	defer backend.DecConn()
+
 	backend.ReverseProxy.ServeHTTP(w, r)
 }

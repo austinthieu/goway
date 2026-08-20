@@ -60,6 +60,10 @@ func newBalancer(strategy string) (balancer.Balancer, error) {
 	switch strategy {
 	case "round_robin", "":
 		return &balancer.RoundRobin{}, nil
+	case "least_conn":
+		return &balancer.LeastConnections{}, nil
+	case "weighted":
+		return &balancer.WeightedRoundRobin{}, nil
 	default:
 		return nil, errUnknownStrategy(strategy)
 	}
