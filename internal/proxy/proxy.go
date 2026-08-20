@@ -1,13 +1,15 @@
-// Package proxy wires the backend pool, load balancer, and rate limiter
-// into an http.Handler that routes each incoming request to a chosen
-// backend.
+// Package proxy wires the backend pool, load balancer, rate limiter, and
+// metrics into an http.Handler that routes each incoming request to a
+// chosen backend.
 package proxy
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/austinthieu/goway/internal/backendpool"
 	"github.com/austinthieu/goway/internal/balancer"
+	"github.com/austinthieu/goway/internal/metrics"
 	"github.com/austinthieu/goway/internal/ratelimit"
 )
 
@@ -17,10 +19,14 @@ type Gateway struct {
 	Pool     *backendpool.Pool
 	Balancer balancer.Balancer
 	Limiter  *ratelimit.Limiter
+	Metrics  *metrics.Recorder
 }
 
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if g.Limiter != nil && !g.Limiter.Allow(ratelimit.ClientID(r)) {
+		if g.Metrics != nil {
+			g.Metrics.RateLimitRejections.Inc()
+		}
 		http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
 		return
 	}
@@ -42,5 +48,26 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	backend.IncConn()
 	defer backend.DecConn()
 
-	backend.ReverseProxy.ServeHTTP(w, r)
+	if g.Metrics == nil {
+		backend.ReverseProxy.ServeHTTP(w, r)
+		return
+	}
+
+	start := time.Now()
+	rec := &statusRecorder{ResponseWriter: w, statusCode: http.StatusOK}
+	backend.ReverseProxy.ServeHTTP(rec, r)
+	g.Metrics.ObserveRequest(backend.URL.String(), rec.statusCode, time.Since(start))
+}
+
+// statusRecorder captures the status code a ReverseProxy writes, since
+// httputil.ReverseProxy writes directly to the ResponseWriter with no
+// built-in way to observe what it sent.
+type statusRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (s *statusRecorder) WriteHeader(code int) {
+	s.statusCode = code
+	s.ResponseWriter.WriteHeader(code)
 }

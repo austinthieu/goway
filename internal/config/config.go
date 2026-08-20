@@ -25,6 +25,7 @@ type RateLimitConfig struct {
 // Config is the top-level gateway configuration.
 type Config struct {
 	ListenAddr string          `yaml:"listen_addr"`
+	AdminAddr  string          `yaml:"admin_addr"`
 	Strategy   string          `yaml:"strategy"`
 	Backends   []BackendConfig `yaml:"backends"`
 	RateLimit  RateLimitConfig `yaml:"rate_limit"`
@@ -55,6 +56,9 @@ func Load(path string) (*Config, error) {
 	}
 	if cfg.RateLimit.RefillRate == 0 {
 		cfg.RateLimit.RefillRate = 10
+	}
+	if cfg.AdminAddr == "" {
+		cfg.AdminAddr = ":9090"
 	}
 
 	return &cfg, nil

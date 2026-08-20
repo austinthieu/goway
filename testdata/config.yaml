@@ -1,4 +1,5 @@
 listen_addr: ":8080"
+admin_addr: ":9090"
 strategy: round_robin
 rate_limit:
   capacity: 20
