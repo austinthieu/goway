@@ -13,12 +13,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/austinthieu/goway/internal/backendpool"
-	"github.com/austinthieu/goway/internal/balancer"
-	"github.com/austinthieu/goway/internal/config"
-	"github.com/austinthieu/goway/internal/healthcheck"
-	"github.com/austinthieu/goway/internal/metrics"
-	"github.com/austinthieu/goway/internal/ratelimit"
+	"github.com/austinthieu/gobalance/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/balancer"
+	"github.com/austinthieu/gobalance/internal/config"
+	"github.com/austinthieu/gobalance/internal/healthcheck"
+	"github.com/austinthieu/gobalance/internal/metrics"
+	"github.com/austinthieu/gobalance/internal/ratelimit"
 )
 
 // snapshot is everything a request needs, built together and swapped in as

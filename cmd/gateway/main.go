@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/austinthieu/goway/internal/config"
-	"github.com/austinthieu/goway/internal/metrics"
-	"github.com/austinthieu/goway/internal/proxy"
+	"github.com/austinthieu/gobalance/internal/config"
+	"github.com/austinthieu/gobalance/internal/metrics"
+	"github.com/austinthieu/gobalance/internal/proxy"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

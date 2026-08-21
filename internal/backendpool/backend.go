@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"sync/atomic"
 
-	"github.com/austinthieu/goway/internal/circuitbreaker"
-	"github.com/austinthieu/goway/internal/config"
+	"github.com/austinthieu/gobalance/internal/circuitbreaker"
+	"github.com/austinthieu/gobalance/internal/config"
 )
 
 // Backend represents a single upstream server the gateway can route to.

@@ -1,4 +1,4 @@
-# goway
+# gobalance
 
 An HTTP load balancer / API gateway that routes traffic across a pool of backend servers, detecting and routing around failures automatically.
 

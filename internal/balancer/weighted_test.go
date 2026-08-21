@@ -3,7 +3,7 @@ package balancer
 import (
 	"testing"
 
-	"github.com/austinthieu/goway/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/backendpool"
 )
 
 func TestWeightedRoundRobinRespectsWeightRatio(t *testing.T) {

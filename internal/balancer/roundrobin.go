@@ -3,7 +3,7 @@ package balancer
 import (
 	"sync/atomic"
 
-	"github.com/austinthieu/goway/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/backendpool"
 )
 
 // RoundRobin cycles through the healthy backends in order. The counter is

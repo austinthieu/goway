@@ -1,11 +1,11 @@
-# goway
+# gobalance
 
 An HTTP load balancer / API gateway written from scratch in Go: routes
 traffic across a pool of backends, detects and routes around failures
 automatically, and enforces per-client rate limits — with zero-downtime
 config reload.
 
-![goway demo: round-robin load balancing, automatic failover, rate limiting, and a zero-downtime config reload](docs/demo.gif)
+![gobalance demo: round-robin load balancing, automatic failover, rate limiting, and a zero-downtime config reload](docs/demo.gif)
 
 ## Features
 
@@ -106,7 +106,7 @@ Hot-path allocation benchmarks (`go test -bench=. -benchmem`):
 
 ## Resume bullet
 
-> Built *goway*, a Go HTTP load balancer/API gateway from scratch
+> Built *gobalance*, a Go HTTP load balancer/API gateway from scratch
 > supporting round-robin, least-connections, and weighted routing across N
 > backends, with active/passive (circuit breaker) health detection, a
 > half-open recovery protocol, and per-client token-bucket rate limiting.

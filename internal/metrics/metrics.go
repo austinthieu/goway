@@ -22,28 +22,28 @@ type Recorder struct {
 func NewRecorder(reg prometheus.Registerer) *Recorder {
 	r := &Recorder{
 		Requests: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "goway_requests_total",
+			Name: "gobalance_requests_total",
 			Help: "Total proxied requests, labeled by backend and status class.",
 		}, []string{"backend", "status_class"}),
 
 		RequestDuration: prometheus.NewHistogramVec(prometheus.HistogramOpts{
-			Name:    "goway_request_duration_seconds",
+			Name:    "gobalance_request_duration_seconds",
 			Help:    "Proxied request latency in seconds, labeled by backend.",
 			Buckets: prometheus.DefBuckets,
 		}, []string{"backend"}),
 
 		RateLimitRejections: prometheus.NewCounter(prometheus.CounterOpts{
-			Name: "goway_ratelimit_rejections_total",
+			Name: "gobalance_ratelimit_rejections_total",
 			Help: "Total requests rejected by the rate limiter.",
 		}),
 
 		BackendHealthy: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "goway_backend_healthy",
+			Name: "gobalance_backend_healthy",
 			Help: "1 if the backend's active health check last succeeded, else 0.",
 		}, []string{"backend"}),
 
 		BreakerState: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "goway_circuit_breaker_state",
+			Name: "gobalance_circuit_breaker_state",
 			Help: "Circuit breaker state per backend: 0=closed, 1=open, 2=half_open.",
 		}, []string{"backend"}),
 	}

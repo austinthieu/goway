@@ -20,7 +20,7 @@ services:
     # so this uses a Docker-specific config (see testdata/config.docker.yaml)
     # rather than the default testdata/config.yaml baked into the image.
     volumes:
-      - ./testdata/config.docker.yaml:/etc/goway/config.yaml:ro
+      - ./testdata/config.docker.yaml:/etc/gobalance/config.yaml:ro
     ports:
       - "8080:8080" # proxied traffic
       - "9090:9090" # admin endpoint / metrics

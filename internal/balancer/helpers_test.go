@@ -1,8 +1,8 @@
 package balancer
 
 import (
-	"github.com/austinthieu/goway/internal/backendpool"
-	"github.com/austinthieu/goway/internal/config"
+	"github.com/austinthieu/gobalance/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/config"
 )
 
 // testingTB is the subset of *testing.T / *testing.B that newTestPool

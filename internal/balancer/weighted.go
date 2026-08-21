@@ -3,7 +3,7 @@ package balancer
 import (
 	"sync"
 
-	"github.com/austinthieu/goway/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/backendpool"
 )
 
 // WeightedRoundRobin is the smooth/interleaved weighted round-robin

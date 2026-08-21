@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/austinthieu/goway/internal/config"
-	"github.com/austinthieu/goway/internal/proxy"
+	"github.com/austinthieu/gobalance/internal/config"
+	"github.com/austinthieu/gobalance/internal/proxy"
 )
 
 // fakeBackend is an httptest.Server whose /healthz always succeeds and

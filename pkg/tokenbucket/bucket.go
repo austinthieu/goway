@@ -1,5 +1,5 @@
 // Package tokenbucket implements a standalone token bucket rate limiter.
-// It has no dependency on the rest of goway, so it's usable outside this
+// It has no dependency on the rest of gobalance, so it's usable outside this
 // project as-is.
 package tokenbucket
 

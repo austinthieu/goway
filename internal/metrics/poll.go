@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/austinthieu/goway/internal/backendpool"
-	"github.com/austinthieu/goway/internal/circuitbreaker"
+	"github.com/austinthieu/gobalance/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/circuitbreaker"
 )
 
 // PollBackends periodically snapshots each backend's active-health and

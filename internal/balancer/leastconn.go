@@ -1,6 +1,6 @@
 package balancer
 
-import "github.com/austinthieu/goway/internal/backendpool"
+import "github.com/austinthieu/gobalance/internal/backendpool"
 
 // LeastConnections picks the healthy backend with the fewest active
 // connections. Ties are broken by first-found-in-pool-order.

@@ -67,8 +67,8 @@ for i in 1 2 3 4; do
 done
 
 step "Prometheus metrics"
-echo '$ curl -s localhost:9090/metrics | grep "^goway_" | head -9'
-curl -s localhost:9090/metrics | grep "^goway_" | head -9
+echo '$ curl -s localhost:9090/metrics | grep "^gobalance_" | head -9'
+curl -s localhost:9090/metrics | grep "^gobalance_" | head -9
 
 pause 2
 echo

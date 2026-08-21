@@ -1,4 +1,4 @@
-module github.com/austinthieu/goway
+module github.com/austinthieu/gobalance
 
 go 1.27.0
 

@@ -4,7 +4,7 @@ A real terminal transcript, captured end-to-end against a running gateway
 (3 backends started via `demo-backend`, gateway via `testdata/config.yaml`).
 Not staged output — every command below was actually run.
 
-![goway demo](demo.gif)
+![gobalance demo](demo.gif)
 
 The recording above is this same walkthrough, produced by
 `scripts/demo.sh` via `docs/demo.tape`.
@@ -133,19 +133,19 @@ is in rotation within one reload cycle.
 ## 5. Prometheus metrics, live
 
 ```
-$ curl -s localhost:9090/metrics | grep "^goway_" | head -12
-goway_backend_healthy{backend="http://localhost:8081"} 1
-goway_backend_healthy{backend="http://localhost:8082"} 0
-goway_backend_healthy{backend="http://localhost:8083"} 1
-goway_backend_healthy{backend="http://localhost:8084"} 1
-goway_circuit_breaker_state{backend="http://localhost:8081"} 0
-goway_circuit_breaker_state{backend="http://localhost:8082"} 0
-goway_circuit_breaker_state{backend="http://localhost:8083"} 0
-goway_circuit_breaker_state{backend="http://localhost:8084"} 0
-goway_ratelimit_rejections_total 4
-goway_request_duration_seconds_bucket{backend="http://localhost:8081",le="0.005"} 14
-goway_request_duration_seconds_bucket{backend="http://localhost:8081",le="0.01"} 14
-goway_request_duration_seconds_bucket{backend="http://localhost:8081",le="0.025"} 14
+$ curl -s localhost:9090/metrics | grep "^gobalance_" | head -12
+gobalance_backend_healthy{backend="http://localhost:8081"} 1
+gobalance_backend_healthy{backend="http://localhost:8082"} 0
+gobalance_backend_healthy{backend="http://localhost:8083"} 1
+gobalance_backend_healthy{backend="http://localhost:8084"} 1
+gobalance_circuit_breaker_state{backend="http://localhost:8081"} 0
+gobalance_circuit_breaker_state{backend="http://localhost:8082"} 0
+gobalance_circuit_breaker_state{backend="http://localhost:8083"} 0
+gobalance_circuit_breaker_state{backend="http://localhost:8084"} 0
+gobalance_ratelimit_rejections_total 4
+gobalance_request_duration_seconds_bucket{backend="http://localhost:8081",le="0.005"} 14
+gobalance_request_duration_seconds_bucket{backend="http://localhost:8081",le="0.01"} 14
+gobalance_request_duration_seconds_bucket{backend="http://localhost:8081",le="0.025"} 14
 ```
 
 This snapshot is a nice illustration of the two-mechanism health model on

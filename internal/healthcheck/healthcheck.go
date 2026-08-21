@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/austinthieu/goway/internal/backendpool"
+	"github.com/austinthieu/gobalance/internal/backendpool"
 )
 
 // Options configures the active health-check loop.

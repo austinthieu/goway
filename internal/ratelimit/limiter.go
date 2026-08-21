@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/austinthieu/goway/pkg/tokenbucket"
+	"github.com/austinthieu/gobalance/pkg/tokenbucket"
 )
 
 // Options configures the shared default token bucket applied to every
